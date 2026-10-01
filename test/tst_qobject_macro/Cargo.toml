@@ -64,8 +64,8 @@ path = "tests/signal_nested_types_tests.rs"
 harness = false
 
 [[test]]
-name = "qml_method_invoker_tests"
-path = "tests/qml_method_invoker_tests.rs"
+name = "qthreadhandle_tests"
+path = "tests/qthreadhandle_tests.rs"
 harness = false
 
 [[test]]
@@ -96,11 +96,6 @@ harness = false
 [[test]]
 name = "qml_overload_tests"
 path = "tests/qml_overload_tests.rs"
-harness = false
-
-[[test]]
-name = "revert_collision_tests"
-path = "tests/revert_collision_tests.rs"
 harness = false
 
 [[test]]

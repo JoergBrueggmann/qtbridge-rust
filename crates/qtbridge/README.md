@@ -216,7 +216,7 @@ A working backend with data displayed in QML.
 ### [Host Monitor](https://github.com/qt/qtbridge-rust-examples/tree/main/host_monitor)
 
 This example shows how to combine a Qt UI with [tokio](https://tokio.rs/) runtime
-in a multithreaded environment using [`QmlMethodInvoker`].
+in a multithreaded environment using [`QThreadHandle`].
 
 ### [Color Palette](https://github.com/qt/qtbridge-rust-examples/tree/main/color_palette)
 

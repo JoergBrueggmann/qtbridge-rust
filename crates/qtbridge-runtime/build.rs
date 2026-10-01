@@ -22,7 +22,7 @@ fn main() {
         "qresource",
         "registry",
         "rustobjectgetter",
-        "qml_method_invoker",
+        "qthreadhandle",
     ];
 
     let qt_modules = [

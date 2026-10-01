@@ -6,7 +6,6 @@
 #[doc(hidden)]
 pub use qtbridge_runtime;
 pub use qtbridge_runtime::QModelItem;
-pub use qtbridge_runtime::invoke_method;
 pub use qtbridge_runtime::QVariantConvertible;
 pub use qtbridge_runtime::QMetaTypeCompatible;
 pub use qtbridge_runtime::QPropertyMember;
@@ -266,8 +265,7 @@ pub use qtbridge_gen::qsignal;
 /// Annotates a function as invokable from QML.
 ///
 /// Such a function is also registered as a Qt slot, so it can be the target of a
-/// [signal-slot connection](https://doc.qt.io/qt-6/signalsandslots.html), or be
-/// invoked by name from Rust through a [`QmlMethodInvoker`].
+/// [signal-slot connection](https://doc.qt.io/qt-6/signalsandslots.html).
 ///
 /// ### Requirements
 ///
@@ -417,7 +415,7 @@ pub use qtbridge_gen::qproperty;
 
 pub use qtbridge_runtime::QApp;
 pub use qtbridge_runtime::qresource;
-pub use qtbridge_runtime::QmlMethodInvoker;
+pub use qtbridge_runtime::QThreadHandle;
 
 #[doc(hidden)]
 pub use qtbridge_runtime::QObjectHolder;

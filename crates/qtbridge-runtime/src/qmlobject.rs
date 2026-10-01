@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only
 
 use qtbridge_type_lib::core::qobject;
-use crate::QmlMethodInvoker;
+use crate::QThreadHandle;
 use crate::qobjectholder::QObjectHolder;
 use crate::registry::Owner;
 
@@ -39,8 +39,11 @@ pub trait QmlObject: QObjectHolder {
         }
     }
 
-    /// Returns a [`QmlMethodInvoker`] that can invoke methods on the underlying
-    /// `QObject` from any thread.
+    /// Returns a [`QThreadHandle`] that can schedule Rust closures to run
+    /// on this object on the Qt thread, from any thread.
+    ///
+    /// This function can only be called on the Qt thread for QmlObject that
+    /// live in this thread.
     ///
     /// # Example
     ///
@@ -49,20 +52,16 @@ pub trait QmlObject: QObjectHolder {
     /// # #[qobject]
     /// # pub mod example {
     /// #     #[derive(Default)]
-    /// #     pub struct Backend {}
-    /// #     impl Backend {
-    /// #         #[qsignal]
-    /// #         pub fn data_ready(&mut self);
-    /// #     }
+    /// #     pub struct Backend { pub value: i32 }
     /// # }
     /// # use example::Backend;
     /// let backend = Backend::default_with_attached_qobject();
-    /// let invoker = backend.borrow().get_qml_method_invoker();
-    /// invoker.invoke_method("dataReady");
+    /// let handle = backend.borrow().get_thread_handle();
+    /// handle.invoke_mut(|b| b.value = 42);
     /// ```
-    fn get_qml_method_invoker(&self) -> QmlMethodInvoker
+    fn get_thread_handle(&self) -> QThreadHandle<Self>
     {
-        QmlMethodInvoker::new(self)
+        QThreadHandle::new(self)
     }
 }
 

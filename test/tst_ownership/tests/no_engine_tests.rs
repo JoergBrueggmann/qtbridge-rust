@@ -83,13 +83,13 @@ fn object_signal_argument_without_application_is_reclaimed_by_collect_garbage() 
     assert!(weak.upgrade().is_none());
 }
 
-/// The invoker degrades gracefully without an application.
-fn invoker_without_application_does_not_crash() {
+/// The thread handle degrades gracefully without an application.
+fn thread_handle_without_application_does_not_crash() {
     let backend = Backend::default_with_attached_qobject();
-    let invoker = backend.borrow().get_qml_method_invoker();
-    // The queued invocation cannot be delivered; the call itself must not
+    let handle = backend.borrow().get_thread_handle();
+    // The queued closure cannot be delivered; the call itself must not
     // crash or corrupt the object.
-    invoker.invoke_method("bump");
+    handle.invoke_mut(|b| b.bump());
     assert_eq!(backend.borrow().calls, 0);
 }
 
@@ -115,7 +115,7 @@ fn main() {
     plain_lifecycle_works_without_application();
     appless_churn_is_bounded_by_allocation_pressure();
     object_signal_argument_without_application_is_reclaimed_by_collect_garbage();
-    invoker_without_application_does_not_crash();
+    thread_handle_without_application_does_not_crash();
 }
 
 #[cfg(miri)]
