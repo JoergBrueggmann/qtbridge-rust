@@ -6,16 +6,10 @@ use qtbridge_build_utils::qt_build::{QtInstallation, get_cxx_qt_lib_include_path
 
 fn main() {
 
-    let bridge_files = vec!(
+    let bridge_files = vec![
         "quicktestmain",
         "messagecapture"
-    );
-
-    let other_rust_files: Vec<&str> = vec!(
-    );
-
-    let other_cpp_files: Vec<&str> = vec!(
-    );
+    ];
 
     let moc_files = [
         "src/cpp/qtestsetup.h",
@@ -41,16 +35,6 @@ fn main() {
         if Path::new(&cpp_file).is_file() {
             cpp_files.push(cpp_file);
         }
-    }
-
-    for rust_file in other_rust_files {
-        let rust_file = format!("src/{rust_file}");
-        println!("cargo::rerun-if-changed={rust_file}");
-    }
-
-    for cpp_file in other_cpp_files {
-        let cpp_file = format!("src/cpp/{cpp_file}");
-        cpp_files.push(cpp_file);
     }
 
     let qt = QtInstallation::default();

@@ -25,12 +25,6 @@ fn main() {
         "qml_method_invoker",
     ];
 
-    let other_rust_files: Vec<&str> = vec!(
-    );
-
-    let other_cpp_files: Vec<&str> = vec!(
-    );
-
     let qt_modules = [
         "Core",
         "Gui",
@@ -52,17 +46,6 @@ fn main() {
             cpp_files.push(cpp_file);
         }
     }
-
-    for rust_file in other_rust_files {
-        let rust_file = format!("src/{rust_file}");
-        println!("cargo::rerun-if-changed={rust_file}");
-    }
-
-    for cpp_file in other_cpp_files {
-        let cpp_file = format!("src/cpp/{cpp_file}");
-        cpp_files.push(cpp_file);
-    }
-
 
     let type_lib_include = std::env::var("DEP_QTBRIDGE_TYPE_LIB_INCLUDE")
     .expect("DEP_QTBRIDGE_TYPE_LIB_INCLUDE not set. This variable should have been set by qtbridge-type-lib");
