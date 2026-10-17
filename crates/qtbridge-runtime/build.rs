@@ -16,6 +16,7 @@ fn main() {
     let bridge_files = [
         "dynamicmetaobjectbuilder",
         "dynamicmetaobjectdata",
+        "fileopen",
         "qmetatypeget",
         "qmlprivate",
         "qresource",

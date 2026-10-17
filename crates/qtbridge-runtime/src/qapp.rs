@@ -249,4 +249,83 @@ impl QApp {
         self.app.pin_mut().set_application_name(&name.into());
         self
     }
+
+    /// Installs the handler for the file-open event of the application.
+    ///
+    /// The operating system sends this event when the user opens a document
+    /// registered for the application, e.g. by double-clicking it in the
+    /// Finder on macOS; Qt delivers it as `QFileOpenEvent`. The handler is
+    /// called with the path of the file, on the main thread from within the
+    /// event loop: the event of a launch by double-click arrives after
+    /// [`run`](QApp::run) has started. Call before [`run`](QApp::run).
+    /// Only one handler is kept; a second call replaces the first.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    ///# use std::cell::RefCell;
+    ///# use std::rc::Rc;
+    ///# use qtbridge_runtime::QApp;
+    /// let opened = Rc::new(RefCell::new(Vec::new()));
+    /// let recorder = opened.clone();
+    ///
+    /// QApp::new()
+    ///     .on_file_open(move |path| recorder.borrow_mut().push(path))
+    ///#    .post_file_open("/tmp/example.txt")
+    ///     .load_qml(br#"
+    ///         import QtQuick
+    ///         Item {
+    ///#            Component.onCompleted: closeTimer.start()
+    ///#            Timer {
+    ///#                id: closeTimer
+    ///#                interval: 1
+    ///#                onTriggered: Qt.quit()
+    ///#            }
+    ///         }"#)
+    ///     .run();
+    ///# assert_eq!(*opened.borrow(), vec!["/tmp/example.txt".to_string()]);
+    /// ```
+    pub fn on_file_open(&mut self, handler: impl FnMut(String) + 'static) -> &mut Self {
+        crate::fileopen::install_file_open_handler(self.app.pin_mut(), handler);
+        self
+    }
+
+    /// Posts a file-open event for `path` to the application, as the
+    /// operating system would.
+    ///
+    /// Lets a test or the application itself raise the event. It is
+    /// delivered when the event loop runs, so a handler installed with
+    /// [`on_file_open`](QApp::on_file_open) receives `path` after
+    /// [`run`](QApp::run) has started.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    ///# use std::cell::RefCell;
+    ///# use std::rc::Rc;
+    ///# use qtbridge_runtime::QApp;
+    /// let opened = Rc::new(RefCell::new(Vec::new()));
+    /// let recorder = opened.clone();
+    ///
+    /// QApp::new()
+    ///     .on_file_open(move |path| recorder.borrow_mut().push(path))
+    ///     .post_file_open("/tmp/example.txt")
+    ///     .load_qml(br#"
+    ///         import QtQuick
+    ///         Item {
+    ///#            Component.onCompleted: closeTimer.start()
+    ///#            Timer {
+    ///#                id: closeTimer
+    ///#                interval: 1
+    ///#                onTriggered: Qt.quit()
+    ///#            }
+    ///         }"#)
+    ///     .run();
+    ///
+    /// assert_eq!(*opened.borrow(), vec!["/tmp/example.txt".to_string()]);
+    /// ```
+    pub fn post_file_open(&mut self, path: &str) -> &mut Self {
+        crate::fileopen::post_file_open_event(self.app.pin_mut(), path);
+        self
+    }
 }

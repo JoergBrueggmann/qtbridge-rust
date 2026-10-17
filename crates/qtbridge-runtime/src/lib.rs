@@ -4,6 +4,7 @@
 pub mod dispatchmetacall;
 pub mod dynamicmetaobjectbuilder;
 pub mod dynamicmetaobjectdata;
+pub mod fileopen;
 pub mod qmetatypeget;
 pub mod qml_method_invoker;
 pub mod qapp;
