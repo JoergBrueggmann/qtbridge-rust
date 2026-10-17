@@ -9,6 +9,60 @@ There are multiple great sources to learn QML:
 
 You can also experiment with QML in your browser using [QML Preview](https://try.qt.io/).
 
+## This fork: the file-open event of the application
+
+This is a fork of [qt/qtbridge-rust](https://github.com/qt/qtbridge-rust), a
+read-only mirror of the repository on
+[code.qt.io](https://code.qt.io/cgit/qt/qtbridge-rust.git/). The branch
+`file-open-event` adds one thing to the release 0.3.0 and changes nothing else:
+the event by which the operating system hands a document to a running or
+launching application, `QEvent::FileOpen`, reaches Rust.
+
+On macOS, Launch Services hands a double-clicked document to the application
+bundle registered for its type as an Apple event, never as an argument of the
+command line; Qt turns it into a `QFileOpenEvent`. Release 0.3.0 builds the
+`QGuiApplication` inside `QApp` and offers no way to receive that event, so an
+application built with qtbridge cannot be the editor of a document type. The
+branch adds two methods to `QApp`:
+
+```rust
+use qtbridge::QApp;
+
+QApp::new()
+    .on_file_open(|path| println!("opened with {path}"))
+    .load_qml(include_bytes!("qml/Main.qml"))
+    .run();
+```
+
+- `on_file_open(handler)` installs the handler, called on the main thread from
+  within the event loop with the path of the file; the event of a launch by
+  double-click arrives after `run()` has started, one event per file. Only one
+  handler is kept.
+- `post_file_open(path)` posts the event as the operating system would, so that
+  a test or the application raises it itself.
+
+Both carry rustdoc with doc tests, and `test/tst_fileopen` covers them. The
+change is offered to Qt through Gerrit, as [CONTRIBUTE.md](CONTRIBUTE.md)
+requires; the fork goes once a release of qtbridge holds the event. It is used
+by [genc³wb](https://github.com/JoergBrueggmann/genc3wb), the workbench of the
+meta compiler-compiler genc³, which opens gc3n-files on a double-click with it.
+
+To build against the branch, name every crate of the workspace in
+`[patch.crates-io]` of your `Cargo.toml`, so that one source serves them all:
+
+```toml
+[patch.crates-io]
+qtbridge = { git = "https://github.com/JoergBrueggmann/qtbridge-rust", branch = "file-open-event" }
+qtbridge-build-utils = { git = "https://github.com/JoergBrueggmann/qtbridge-rust", branch = "file-open-event" }
+qtbridge-gen = { git = "https://github.com/JoergBrueggmann/qtbridge-rust", branch = "file-open-event" }
+qtbridge-gen-common = { git = "https://github.com/JoergBrueggmann/qtbridge-rust", branch = "file-open-event" }
+qtbridge-interfaces = { git = "https://github.com/JoergBrueggmann/qtbridge-rust", branch = "file-open-event" }
+qtbridge-runtime = { git = "https://github.com/JoergBrueggmann/qtbridge-rust", branch = "file-open-event" }
+qtbridge-type-lib = { git = "https://github.com/JoergBrueggmann/qtbridge-rust", branch = "file-open-event" }
+```
+
+The rest of this file is the README of the release 0.3.0 as it stands.
+
 ## At a glance
 
 Main.rs
